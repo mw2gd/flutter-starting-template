@@ -71,6 +71,10 @@ class Root extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
+      themeMode: ThemeMode.light,
+      theme: ThemeData.from(
+          colorScheme:
+              ColorScheme.fromSeed(seedColor: Colors.deepOrangeAccent)),
       routerConfig: _router,
       title: 'FlutterBlueprint',
     );
@@ -90,8 +94,9 @@ class HomePage extends StatelessWidget {
             parent: AlwaysScrollableScrollPhysics()),
         slivers: <Widget>[
           const SliverAppBar(
+            pinned: true,
             stretch: true,
-            expandedHeight: 160,
+            expandedHeight: 80,
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: true,
               title: Text('Flight Report'),
@@ -100,6 +105,36 @@ class HomePage extends StatelessWidget {
           SliverList(
             delegate: SliverChildListDelegate(
               const <Widget>[
+                ListTile(
+                  leading: Icon(Icons.wb_sunny),
+                  title: Text('Sunday'),
+                  subtitle: Text('sunny, h: 80, l: 65'),
+                ),
+                ListTile(
+                  leading: Icon(Icons.wb_sunny),
+                  title: Text('Monday'),
+                  subtitle: Text('sunny, h: 80, l: 65'),
+                ),
+                ListTile(
+                  leading: Icon(Icons.wb_sunny),
+                  title: Text('Sunday'),
+                  subtitle: Text('sunny, h: 80, l: 65'),
+                ),
+                ListTile(
+                  leading: Icon(Icons.wb_sunny),
+                  title: Text('Monday'),
+                  subtitle: Text('sunny, h: 80, l: 65'),
+                ),
+                ListTile(
+                  leading: Icon(Icons.wb_sunny),
+                  title: Text('Sunday'),
+                  subtitle: Text('sunny, h: 80, l: 65'),
+                ),
+                ListTile(
+                  leading: Icon(Icons.wb_sunny),
+                  title: Text('Monday'),
+                  subtitle: Text('sunny, h: 80, l: 65'),
+                ),
                 ListTile(
                   leading: Icon(Icons.wb_sunny),
                   title: Text('Sunday'),

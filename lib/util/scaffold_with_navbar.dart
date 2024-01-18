@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-// Builds the "shell" for the app by building a Scaffold with a
+/// Builds the "shell" for the app by building a Scaffold with a
 /// BottomNavigationBar, where [child] is placed in the body of the Scaffold.
 class ScaffoldWithNavBar extends StatelessWidget {
   /// Constructs an [ScaffoldWithNavBar].
