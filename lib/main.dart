@@ -71,7 +71,7 @@ class Root extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      themeMode: ThemeMode.light,
+      themeMode: ThemeMode.dark,
       theme: ThemeData.from(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
@@ -101,12 +101,20 @@ class HomePage extends StatelessWidget {
             parent: AlwaysScrollableScrollPhysics()),
         slivers: <Widget>[
           SliverAppBar(
+            forceElevated:
+                false, // Set to True and set elevation to four surface tint on appbar
+            scrolledUnderElevation: 0,
+            elevation: 0,
             pinned: true,
             stretch: true,
             expandedHeight: 80,
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: true,
-              title: Text('Flight Report'),
+              title: Text(
+                'Flight Report',
+                style:
+                    TextStyle(color: Theme.of(context).colorScheme.onSurface),
+              ),
             ),
           ),
           SliverList(
