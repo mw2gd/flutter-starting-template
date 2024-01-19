@@ -73,8 +73,15 @@ class Root extends StatelessWidget {
     return MaterialApp.router(
       themeMode: ThemeMode.light,
       theme: ThemeData.from(
-          colorScheme:
-              ColorScheme.fromSeed(seedColor: Colors.deepOrangeAccent)),
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+            brightness: Brightness.light, seedColor: Colors.green),
+      ),
+      darkTheme: ThemeData.from(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+            brightness: Brightness.dark, seedColor: Colors.green),
+      ),
       routerConfig: _router,
       title: 'FlutterBlueprint',
     );
@@ -93,7 +100,7 @@ class HomePage extends StatelessWidget {
         physics: const BouncingScrollPhysics(
             parent: AlwaysScrollableScrollPhysics()),
         slivers: <Widget>[
-          const SliverAppBar(
+          SliverAppBar(
             pinned: true,
             stretch: true,
             expandedHeight: 80,
