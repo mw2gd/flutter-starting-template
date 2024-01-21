@@ -1,7 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
 
+///
+/// Constants
+///
 @immutable
 class ColorSeeds {
   static const Color red = Colors.red;
@@ -13,17 +15,20 @@ class ColorSeeds {
   static const Color teal = Colors.teal;
 }
 
+Color defaultColor = ColorSeeds.grey;
+
 ///
 /// Bloc Definition
 ///
 class ColorSchemeBloc extends Bloc<ColorSchemeEvent, ColorSchemeState> {
-  ColorSchemeBloc()
-      : super(ColorSchemeState(ColorSeeds.grey, ThemeMode.system)) {
+  ColorSchemeBloc(Brightness brightness)
+      : super(ColorSchemeState(defaultColor,
+            brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light)) {
     on<ColorSchemeChange>((event, emit) {
-      emit(ColorSchemeState(event.changeTo, state.brightness));
+      emit(ColorSchemeState(event.newColor, state.brightness));
     });
     on<BrightnessChange>((event, emit) {
-      emit(ColorSchemeState(state.color, event.changeTo));
+      emit(ColorSchemeState(state.color, event.newBrightness));
     });
   }
 }
@@ -43,11 +48,11 @@ class ColorSchemeState {
 sealed class ColorSchemeEvent {}
 
 class ColorSchemeChange extends ColorSchemeEvent {
-  final Color changeTo;
-  ColorSchemeChange({required this.changeTo});
+  final Color newColor;
+  ColorSchemeChange({required this.newColor});
 }
 
 class BrightnessChange extends ColorSchemeEvent {
-  final ThemeMode changeTo;
-  BrightnessChange({required this.changeTo});
+  final ThemeMode newBrightness;
+  BrightnessChange({required this.newBrightness});
 }

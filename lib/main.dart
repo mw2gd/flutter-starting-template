@@ -4,9 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutterblueprint/bloc/color_scheme.dart';
-import 'package:flutterblueprint/util/scaffold_with_navbar.dart';
-import 'package:flutterblueprint/util/scaffold_with_navrail.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutterblueprint/router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:settings_ui/settings_ui.dart';
 
@@ -14,93 +12,43 @@ import 'package:settings_ui/settings_ui.dart';
 /// Entry Point of Application.
 ///
 void main() {
-  runApp(Root());
+  runApp(const Root());
 }
-
-///
-/// Navigation Keys for Routing.
-///
-final GlobalKey<NavigatorState> _rootNavigatorKey =
-    GlobalKey<NavigatorState>(debugLabel: 'root');
 
 ///
 /// Highest level widget. Implements routing.
 ///
 class Root extends StatelessWidget {
-  Root({super.key});
-
-  final GoRouter _router = GoRouter(
-    navigatorKey: _rootNavigatorKey,
-    initialLocation: '/home',
-    routes: [
-      // Shell creates a shell, where a screen will be placed into.
-      // Even when the screens are changed (routing). Shell
-      // remains in place!
-      // StatefulShellRoute creates a seperate navigator for each screen.
-      // Which is great when you want to preserve seperate navigation stacks
-      // between screens.
-      // I believe the indexedStack constuctor uses an indexed stack to maintain the
-      // state of widgets.
-      StatefulShellRoute.indexedStack(
-        builder: (BuildContext context, GoRouterState state,
-            StatefulNavigationShell navigationShell) {
-          return LayoutBuilder(
-            builder: (BuildContext context, BoxConstraints constraints) {
-              if (constraints.maxWidth < 450) {
-                return ScaffoldWithNavBar(navigationShell: navigationShell);
-              } else {
-                return ScaffoldWithNavRail(navigationShell: navigationShell);
-              }
-            },
-          );
-        },
-        branches: [
-          // define branch and routes within branch (you can have routes in routes). Each branch has a navigator.
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: '/home',
-                builder: (BuildContext context, GoRouterState state) =>
-                    const HomePage(),
-              ),
-            ],
-          ),
-          StatefulShellBranch(
-            // It's not necessary to provide a navigatorKey if it isn't also
-            // needed elsewhere. If not provided, a default key will be used.
-            routes: [
-              GoRoute(
-                  path: '/settings',
-                  builder: (BuildContext context, GoRouterState state) =>
-                      const SettingsPage()),
-            ],
-          ),
-        ],
-      ),
-    ],
-  );
+  const Root({super.key});
 
   // Defines how to build Root
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ColorSchemeBloc, ColorSchemeState>(
-      builder: (context, state) {
-        return MaterialApp.router(
-          themeMode: state.brightness,
-          theme: ThemeData.from(
-            useMaterial3: true,
-            colorScheme: ColorScheme.fromSeed(
-                brightness: Brightness.light, seedColor: state.color),
-          ),
-          darkTheme: ThemeData.from(
-            useMaterial3: true,
-            colorScheme: ColorScheme.fromSeed(
-                brightness: Brightness.dark, seedColor: state.color),
-          ),
-          routerConfig: _router,
-          title: 'FlutterBlueprint',
-        );
-      },
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+            create: (_) =>
+                ColorSchemeBloc(MediaQuery.of(context).platformBrightness))
+      ],
+      child: BlocBuilder<ColorSchemeBloc, ColorSchemeState>(
+        builder: (context, state) {
+          return MaterialApp.router(
+            themeMode: state.brightness,
+            theme: ThemeData.from(
+              useMaterial3: true,
+              colorScheme: ColorScheme.fromSeed(
+                  brightness: Brightness.light, seedColor: state.color),
+            ),
+            darkTheme: ThemeData.from(
+              useMaterial3: true,
+              colorScheme: ColorScheme.fromSeed(
+                  brightness: Brightness.dark, seedColor: state.color),
+            ),
+            routerConfig: GoRouterInit.getInstance(),
+            title: 'FlutterBlueprint',
+          );
+        },
+      ),
     );
   }
 }
@@ -192,22 +140,104 @@ class HomePage extends StatelessWidget {
 ///
 /// Sample Settings Page
 ///
-class SettingsPage extends StatelessWidget {
+class SettingsPage extends StatefulWidget {
   const SettingsPage({
     super.key,
   });
 
   @override
+  State<SettingsPage> createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends State<SettingsPage> {
+  @override
   Widget build(BuildContext context) {
+    bool darkMode =
+        context.read<ColorSchemeBloc>().state.brightness == ThemeMode.dark;
+
+    Color? colorSeed = context.read<ColorSchemeBloc>().state.color;
+
     return Scaffold(
-        body: SettingsList(
-      sections: [
-        SettingsSection(tiles: [
-          SettingsTile.switchTile(
-              initialValue: Theme.of(context).themeMode,
-              onToggle: onToggle,
-              title: Text("Dark Mode"))
-        ])
+        body: ListView(
+      children: [
+        Column(
+          children: [
+            Card(
+                elevation: 0,
+                color: Colors.transparent,
+                child: ListTile(
+                  title: Text(
+                    "Display",
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                )),
+            Card(
+              child: ListTile(
+                title: const Text("Dark Mode"),
+                trailing: Switch(
+                    value: darkMode,
+                    onChanged: (bool value) {
+                      setState(() {
+                        darkMode = !darkMode;
+                      });
+                      context.read<ColorSchemeBloc>().add(BrightnessChange(
+                          newBrightness:
+                              value ? ThemeMode.dark : ThemeMode.light));
+                    }),
+              ),
+            ),
+            Card(
+              child: ListTile(
+                title: Row(
+                  children: [
+                    const Text("Theme Color"),
+                    Spacer(),
+                    Radio<Color>(
+                        hoverColor: ColorSeeds.green.withOpacity(.5),
+                        fillColor: MaterialStateColor.resolveWith(
+                            (states) => ColorSeeds.green),
+                        value: ColorSeeds.green,
+                        groupValue: colorSeed,
+                        onChanged: (Color? color) {
+                          setState(() {
+                            colorSeed = color;
+                          });
+                          context.read<ColorSchemeBloc>().add(
+                              ColorSchemeChange(newColor: ColorSeeds.green));
+                        }),
+                    Radio<Color>(
+                        hoverColor: ColorSeeds.grey.withOpacity(.5),
+                        fillColor: MaterialStateColor.resolveWith(
+                            (states) => ColorSeeds.grey),
+                        value: ColorSeeds.grey,
+                        groupValue: colorSeed,
+                        onChanged: (Color? color) {
+                          setState(() {
+                            colorSeed = color;
+                          });
+                          context.read<ColorSchemeBloc>().add(
+                              ColorSchemeChange(newColor: ColorSeeds.grey));
+                        }),
+                    Radio<Color>(
+                        hoverColor: ColorSeeds.red.withOpacity(.5),
+                        fillColor: MaterialStateColor.resolveWith(
+                            (states) => ColorSeeds.red),
+                        value: ColorSeeds.red,
+                        groupValue: colorSeed,
+                        onChanged: (Color? color) {
+                          setState(() {
+                            colorSeed = color;
+                          });
+                          context
+                              .read<ColorSchemeBloc>()
+                              .add(ColorSchemeChange(newColor: ColorSeeds.red));
+                        })
+                  ],
+                ),
+              ),
+            )
+          ],
+        )
       ],
     ));
   }
