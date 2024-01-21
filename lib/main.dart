@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutterblueprint/util/scaffold_with_navbar.dart';
+import 'package:flutterblueprint/util/scaffold_with_navrail.dart';
 import 'package:go_router/go_router.dart';
 
 ///
@@ -40,7 +41,15 @@ class Root extends StatelessWidget {
       StatefulShellRoute.indexedStack(
         builder: (BuildContext context, GoRouterState state,
             StatefulNavigationShell navigationShell) {
-          return ScaffoldWithNavBar(navigationShell: navigationShell);
+          return LayoutBuilder(
+            builder: (BuildContext context, BoxConstraints constraints) {
+              if (constraints.maxWidth < 450) {
+                return ScaffoldWithNavBar(navigationShell: navigationShell);
+              } else {
+                return ScaffoldWithNavRail(navigationShell: navigationShell);
+              }
+            },
+          );
         },
         branches: [
           // define branch and routes within branch (you can have routes in routes). Each branch has a navigator.
@@ -68,6 +77,7 @@ class Root extends StatelessWidget {
     ],
   );
 
+  // Defines how to build Root
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
@@ -88,6 +98,9 @@ class Root extends StatelessWidget {
   }
 }
 
+///
+/// Sample Home Page
+///
 class HomePage extends StatelessWidget {
   const HomePage({
     super.key,
@@ -111,7 +124,7 @@ class HomePage extends StatelessWidget {
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: true,
               title: Text(
-                'Flight Report',
+                'Flutter Blueprint',
                 style:
                     TextStyle(color: Theme.of(context).colorScheme.onSurface),
               ),
