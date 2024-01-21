@@ -3,9 +3,12 @@
 ///!!Make sure to cite Open Source libraries!!
 
 import 'package:flutter/material.dart';
+import 'package:flutterblueprint/bloc/color_scheme.dart';
 import 'package:flutterblueprint/util/scaffold_with_navbar.dart';
 import 'package:flutterblueprint/util/scaffold_with_navrail.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:settings_ui/settings_ui.dart';
 
 ///
 /// Entry Point of Application.
@@ -69,7 +72,7 @@ class Root extends StatelessWidget {
               GoRoute(
                   path: '/settings',
                   builder: (BuildContext context, GoRouterState state) =>
-                      const Center(child: Text('settings'))),
+                      const SettingsPage()),
             ],
           ),
         ],
@@ -80,20 +83,24 @@ class Root extends StatelessWidget {
   // Defines how to build Root
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      themeMode: ThemeMode.dark,
-      theme: ThemeData.from(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-            brightness: Brightness.light, seedColor: Colors.green),
-      ),
-      darkTheme: ThemeData.from(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-            brightness: Brightness.dark, seedColor: Colors.green),
-      ),
-      routerConfig: _router,
-      title: 'FlutterBlueprint',
+    return BlocBuilder<ColorSchemeBloc, ColorSchemeState>(
+      builder: (context, state) {
+        return MaterialApp.router(
+          themeMode: state.brightness,
+          theme: ThemeData.from(
+            useMaterial3: true,
+            colorScheme: ColorScheme.fromSeed(
+                brightness: Brightness.light, seedColor: state.color),
+          ),
+          darkTheme: ThemeData.from(
+            useMaterial3: true,
+            colorScheme: ColorScheme.fromSeed(
+                brightness: Brightness.dark, seedColor: state.color),
+          ),
+          routerConfig: _router,
+          title: 'FlutterBlueprint',
+        );
+      },
     );
   }
 }
@@ -179,5 +186,29 @@ class HomePage extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+///
+/// Sample Settings Page
+///
+class SettingsPage extends StatelessWidget {
+  const SettingsPage({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        body: SettingsList(
+      sections: [
+        SettingsSection(tiles: [
+          SettingsTile.switchTile(
+              initialValue: Theme.of(context).themeMode,
+              onToggle: onToggle,
+              title: Text("Dark Mode"))
+        ])
+      ],
+    ));
   }
 }
