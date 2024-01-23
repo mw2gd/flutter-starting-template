@@ -25,6 +25,12 @@ class _SettingsPageState extends State<SettingsPage> {
     return Scaffold(
         body: ListView(
       children: [
+        AppBar(
+            centerTitle: true,
+            scrolledUnderElevation: 0,
+            title: const Text(
+              "Settings",
+            )),
         Column(
           children: [
             Card(
@@ -33,7 +39,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 child: ListTile(
                   title: Text(
                     "Display",
-                    style: Theme.of(context).textTheme.headlineSmall,
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
                 )),
             Card(
@@ -156,7 +162,41 @@ class _SettingsPageState extends State<SettingsPage> {
                   ],
                 ),
               ),
-            )
+            ),
+            Card(
+                elevation: 0,
+                color: Colors.transparent,
+                child: ListTile(
+                  title: Text(
+                    "Other",
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                )),
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.info),
+                title: const Text("Credits"),
+                trailing: const Icon(Icons.arrow_forward_ios_rounded),
+                onTap: () => showDialog<String>(
+                  context: context,
+                  builder: (BuildContext context) => AlertDialog(
+                    scrollable: true,
+                    title: const Text(
+                      'Acknowledgements',
+                      softWrap: false,
+                    ),
+                    content: const Text(
+                        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, 'OK'),
+                        child: const Text('OK'),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ],
         )
       ],
