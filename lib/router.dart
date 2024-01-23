@@ -1,11 +1,12 @@
 ///
 /// GoRouter object for Material App
 ///
+import 'package:flutterblueprint/screens/home_page.dart';
+import 'package:flutterblueprint/screens/settings_page.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterblueprint/util/scaffold_with_navbar.dart';
 import 'package:flutterblueprint/util/scaffold_with_navrail.dart';
-import 'package:flutterblueprint/main.dart';
 
 class GoRouterInit {
   ///
